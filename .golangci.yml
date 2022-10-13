@@ -53,7 +53,7 @@ linters:
 
 linters-settings:
   goimports:
-    local-prefixes: github.com/twpayne/go-jsonstruct
+    local-prefixes: github.com/rAndrade360/go-jsonstruct
 
 issues:
   exclude-rules:
