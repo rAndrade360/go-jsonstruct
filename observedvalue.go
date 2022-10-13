@@ -22,6 +22,7 @@ type ObservedValue struct {
 	AllArrayElementValues   *ObservedValue
 	AllObjectPropertyValues *ObservedValue
 	ObjectPropertyValue     map[string]*ObservedValue
+	FieldKey                string
 }
 
 // Merge merges value into o.
@@ -41,6 +42,7 @@ func (o *ObservedValue) Merge(value interface{}) *ObservedValue {
 		}
 		for _, e := range value {
 			o.AllArrayElementValues = o.AllArrayElementValues.Merge(e)
+			o.AllArrayElementValues.FieldKey = o.FieldKey
 		}
 	case bool:
 		o.Bool++
@@ -70,6 +72,7 @@ func (o *ObservedValue) Merge(value interface{}) *ObservedValue {
 		for k, v := range value {
 			o.AllObjectPropertyValues = o.AllObjectPropertyValues.Merge(v)
 			o.ObjectPropertyValue[k] = o.ObjectPropertyValue[k].Merge(v)
+			o.ObjectPropertyValue[k].FieldKey = k
 		}
 	case string:
 		if value == "" {

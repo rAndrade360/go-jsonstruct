@@ -36,6 +36,8 @@ type Generator struct {
 	intType                   string
 	useJSONNumber             bool
 	goFormat                  bool
+	useInline                 bool
+	inline                    *bytes.Buffer
 }
 
 // A GeneratorOption sets an option on a Generator.
@@ -143,6 +145,13 @@ func WithUseJSONNumber(useJSONNumber bool) GeneratorOption {
 	}
 }
 
+// WithUseInline sets whether to output structs should be inline
+func WithUseInline(useInline bool) GeneratorOption {
+	return func(g *Generator) {
+		g.useInline = useInline
+	}
+}
+
 // NewGenerator returns a new Generator with options.
 func NewGenerator(options ...GeneratorOption) *Generator {
 	g := &Generator{
@@ -156,6 +165,8 @@ func NewGenerator(options ...GeneratorOption) *Generator {
 		intType:                   "int",
 		useJSONNumber:             false,
 		goFormat:                  true,
+		useInline:                 true,
+		inline:                    &bytes.Buffer{},
 	}
 	for _, o := range options {
 		o(g)
@@ -190,6 +201,11 @@ func (g *Generator) GoCode(observedValue *ObservedValue) ([]byte, error) {
 	if g.typeComment != "" {
 		fmt.Fprintf(buffer, "// %s\n", g.typeComment)
 	}
+
+	if !g.useInline {
+		goType += g.inline.String()
+	}
+
 	fmt.Fprintf(buffer, "type %s %s\n", g.typeName, goType)
 	if !g.goFormat {
 		return buffer.Bytes(), nil
@@ -228,7 +244,7 @@ func (g *Generator) GoType(o *ObservedValue, observations int, imports map[strin
 	case distinctTypes == 1 && o.Array > 0:
 		fallthrough
 	case distinctTypes == 2 && o.Array > 0 && o.Null > 0:
-		elementGoType, _ := g.GoType(o.AllArrayElementValues, 0, imports)
+		elementGoType, _ := g.GoType(o.AllArrayElementValues, o.AllArrayElementValues.Observations, imports)
 		return "[]" + elementGoType, o.Array+o.Null < observations && o.Empty == 0
 	case distinctTypes == 1 && o.Bool > 0:
 		return "bool", o.Bool < observations && o.Empty == 0
@@ -329,10 +345,22 @@ func (g *Generator) GoType(o *ObservedValue, observations int, imports map[strin
 		case observations == 0:
 			return b.String(), false
 		case o.Object == observations:
+			if !g.useInline {
+				b = g.fillInlineBuff(o, b)
+			}
+
 			return b.String(), false
 		case o.Object < observations && o.Null == 0:
+			if !g.useInline {
+				b = g.fillInlineBuff(o, b)
+			}
+
 			return "*" + b.String(), true
 		default:
+			if !g.useInline {
+				b = g.fillInlineBuff(o, b)
+			}
+
 			return "*" + b.String(), o.Object+o.Null < observations
 		}
 	case distinctTypes == 1 && o.String > 0 && o.Time == o.String:
@@ -353,4 +381,17 @@ func (g *Generator) GoType(o *ObservedValue, observations int, imports map[strin
 // isUnparseableProperty returns true if key cannot be parsed by encoding/json.
 func isUnparseableProperty(key string) bool {
 	return strings.ContainsAny(key, ` ",`)
+}
+
+func (g *Generator) fillInlineBuff(o *ObservedValue, b *bytes.Buffer) *bytes.Buffer {
+	if o.FieldKey == "" {
+		return b
+	}
+
+	n := g.fieldNamer.FieldName(o.FieldKey)
+	fmt.Fprintf(g.inline, "\ntype %s %s ", n, b.String())
+	b = &bytes.Buffer{}
+	fmt.Fprint(b, n)
+
+	return b
 }

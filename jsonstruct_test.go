@@ -304,6 +304,7 @@ func TestGoType(t *testing.T) {
 						Observations: 1,
 						Empty:        1,
 						Bool:         1,
+						FieldKey:     "key",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -328,6 +329,7 @@ func TestGoType(t *testing.T) {
 					"key": {
 						Observations: 1,
 						Int:          1,
+						FieldKey:     "key",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -351,6 +353,7 @@ func TestGoType(t *testing.T) {
 					"key": {
 						Observations: 1,
 						Int:          1,
+						FieldKey:     "key",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -378,6 +381,7 @@ func TestGoType(t *testing.T) {
 						Observations: 1,
 						Empty:        1,
 						Bool:         1,
+						FieldKey:     "key with spaces",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -404,10 +408,12 @@ func TestGoType(t *testing.T) {
 						Observations: 1,
 						Empty:        1,
 						Bool:         1,
+						FieldKey:     "key with spaces",
 					},
 					"another key with spaces": {
 						Observations: 1,
 						Bool:         1,
+						FieldKey:     "another key with spaces",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -437,11 +443,13 @@ func TestGoType(t *testing.T) {
 						Observations: 1,
 						Empty:        1,
 						Bool:         1,
+						FieldKey:     "key with spaces",
 					},
 					"another key with spaces": {
 						Observations: 1,
 						Empty:        1,
 						Int:          1,
+						FieldKey:     "another key with spaces",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -470,6 +478,7 @@ func TestGoType(t *testing.T) {
 					"kebab-case": {
 						Observations: 1,
 						Bool:         1,
+						FieldKey:     "kebab-case",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -593,6 +602,7 @@ func TestGoType(t *testing.T) {
 						Observations: 1,
 						Empty:        1,
 						Int:          1,
+						FieldKey:     "gpsAltitude",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -625,6 +635,7 @@ func TestGoType(t *testing.T) {
 						Observations: 1,
 						Empty:        1,
 						Int:          1,
+						FieldKey:     "key",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -655,6 +666,7 @@ func TestGoType(t *testing.T) {
 						Observations: 1,
 						Empty:        1,
 						Int:          1,
+						FieldKey:     "key",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
@@ -687,11 +699,13 @@ func TestGoType(t *testing.T) {
 						Observations: 2,
 						Empty:        2,
 						Int:          2,
+						FieldKey:     "key1",
 					},
 					"key2": {
 						Observations: 1,
 						Empty:        1,
 						Int:          1,
+						FieldKey:     "key2",
 					},
 				},
 				AllObjectPropertyValues: &ObservedValue{
