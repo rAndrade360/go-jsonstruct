@@ -32,6 +32,18 @@ func (o *ObservedValue) Merge(value interface{}) *ObservedValue {
 	}
 	o.Observations++
 	switch value := value.(type) {
+	case []map[string]interface{}:
+		o.Array++
+		if len(value) == 0 {
+			o.Empty++
+		}
+		if o.AllArrayElementValues == nil {
+			o.AllArrayElementValues = &ObservedValue{}
+		}
+		for _, e := range value {
+			o.AllArrayElementValues = o.AllArrayElementValues.Merge(e)
+			o.AllArrayElementValues.FieldKey = o.FieldKey
+		}
 	case []interface{}:
 		o.Array++
 		if len(value) == 0 {
@@ -70,9 +82,18 @@ func (o *ObservedValue) Merge(value interface{}) *ObservedValue {
 			o.ObjectPropertyValue = make(map[string]*ObservedValue)
 		}
 		for k, v := range value {
+			if o.ObjectPropertyValue[k] == nil {
+				o.ObjectPropertyValue[k] = &ObservedValue{}
+			}
+
+			if o.AllObjectPropertyValues == nil {
+				o.AllObjectPropertyValues = &ObservedValue{}
+			}
+
+			o.AllObjectPropertyValues.FieldKey = k
+			o.ObjectPropertyValue[k].FieldKey = k
 			o.AllObjectPropertyValues = o.AllObjectPropertyValues.Merge(v)
 			o.ObjectPropertyValue[k] = o.ObjectPropertyValue[k].Merge(v)
-			o.ObjectPropertyValue[k].FieldKey = k
 		}
 	case string:
 		if value == "" {
