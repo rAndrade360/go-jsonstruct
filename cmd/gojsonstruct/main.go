@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/twpayne/go-jsonstruct"
+	"github.com/rAndrade360/go-jsonstruct"
 )
 
 var (
